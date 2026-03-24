@@ -1,7 +1,6 @@
 import { TaskIdentifier as TaskSkillIdentifier } from '@lobechat/builtin-skills';
 import { BriefIdentifier } from '@lobechat/builtin-tool-brief';
 import { NotebookIdentifier } from '@lobechat/builtin-tool-notebook';
-import { TaskIdentifier } from '@lobechat/builtin-tool-task';
 import { buildTaskRunPrompt } from '@lobechat/prompts';
 import type { WorkspaceData } from '@lobechat/types';
 import { TRPCError } from '@trpc/server';
@@ -782,11 +781,11 @@ export const taskRouter = router({
         const db = ctx.serverDB;
         const userId = ctx.userId;
 
-        // Task execution always injects: Task tool + Notebook tool (for document output)
+        // Task execution always injects: Task skill (auto-activated) + Notebook tool (for document output)
         // Conditionally inject Brief tool based on checkpoint/review config
         const checkpoint = model.getCheckpointConfig(task);
         const reviewConfig = model.getReviewConfig(task);
-        const pluginIds = [TaskIdentifier, TaskSkillIdentifier, NotebookIdentifier];
+        const pluginIds = [TaskSkillIdentifier, NotebookIdentifier];
         if (!reviewConfig?.enabled && checkpoint.onAgentRequest !== false) {
           pluginIds.push(BriefIdentifier);
         }
